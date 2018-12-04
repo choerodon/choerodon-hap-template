@@ -3,7 +3,6 @@ import {inject, observer} from 'mobx-react';
 import {withRouter} from 'react-router-dom';
 import {CheckBox, IntlField, Lov, NumberField, Table, TextField,Button} from 'choerodon-hap-ui';
 import recordDS from '../stores/RecordDataSet';
-import queryDS from '../stores/QueryDataSet';
 import headDS from '../stores/HeadDataSet';
 import '../style/index';
 import { Content } from 'choerodon-hap-front-boot';
@@ -26,7 +25,6 @@ class Pattern extends Component {
     }
 
     handleResetQuery() {
-        queryDS.reset();
         headDS.query();
         this.setState({TEMP_CLEAR_SIGN: false});
     }
