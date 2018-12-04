@@ -1,0 +1,53 @@
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.6.0
+
+stages:
+- build
+- docker
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+
+build:
+  stage: build
+  image: registry.choerodon.com.cn/choerodon-hap/hap-ci
+  script:
+  - mvn package -U
+  - npm install --registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ --sass-binary-site=http://npm.taobao.org/mirrors/node-sass
+  - chmod -R 755 node_modules
+  - npm run build
+  - mvn install
+  - mvn package spring-boot:repackage
+  - mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+  - cp target/hap-demo.jar /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/hap-demo.jar
+  only:
+  - tags
+  - master
+  - /^release-.*$/
+  - /^hotfix-.*$/
+
+docker:
+  stage: docker
+  script:
+  - cp /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/hap-demo.jar ${1:-"src/main/docker"}/hap-demo.jar
+  - docker build --pull -t ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG} ${1:-"src/main/docker"}
+  - docker push ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG}
+  - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+  - chart_build
+  only:
+  - tags
+  - master
+  - /^release-.*$/
+  - /^hotfix-.*$/
+
+.auto_devops: &auto_devops |
+  http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=microservice"`
+  if [ "$http_status_code" != "200" ]; then
+    cat .auto_devops.sh
+    exit 1
+  fi
+  source .auto_devops.sh
+
+before_script:
+- *auto_devops
+

@@ -1,0 +1,17 @@
+{
+  "name": "hap-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./react/RouteIndex.js",
+  "scripts": {
+    "start": "choerodon-hap-front-boot start --config ./react/config.js -m",
+    "build": "choerodon-hap-front-boot build --config ./react/config.js -m"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "choerodon-hap-front-boot": "latest",
+    "choerodon-hap-ui": "latest"
+  },
+  "peerDependencies": {}
+}
