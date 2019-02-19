@@ -1,5 +1,5 @@
 {
-  "name": "hap-demo",
+  "name": "hbi-template",
   "version": "1.0.0",
   "description": "",
   "main": "./react/RouteIndex.js",
@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "choerodon-hap-front-boot": "latest",
-    "choerodon-hap-ui": "latest"
+    "choerodon-hap-ui": "latest",
+    "react-loadable": "^5.5.0",
+    "uuid": "^3.0.0"
   },
   "peerDependencies": {}
 }

@@ -9,6 +9,7 @@ import com.hand.hap.core.annotation.MultiLanguage;
 import com.hand.hap.core.annotation.MultiLanguageField;
 import com.hand.hap.hr.dto.Position;
 import com.hand.hap.mybatis.annotation.ExtensionAttribute;
+import com.hand.hap.mybatis.common.query.JoinColumn;
 import com.hand.hap.mybatis.common.query.JoinOn;
 import com.hand.hap.mybatis.common.query.JoinTable;
 import com.hand.hap.mybatis.common.query.Where;
@@ -19,7 +20,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.criteria.JoinType;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -29,44 +32,55 @@ import java.util.Date;
 @MultiLanguage
 public class GridDemo extends BaseDTO {
 
+
     public static final String FIELD_ID = "id";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_AGE = "age";
+    public static final String FIELD_SEX = "sex";
+    public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_POSITION_ID = "positionId";
     public static final String FIELD_POSITION_NAME = "positionName";
-    public static final String FIELD_SEX = "sex";
     public static final String FIELD_BIRTH = "birth";
 
     @Id
     @GeneratedValue(generator = GENERATOR_TYPE)
     @Where
     @Column
+    @OrderBy("DESC")
     private Long id;
 
     @NotEmpty
-
     @Where
     @Length(max = 50)
     @Column
     @MultiLanguageField
+    @OrderBy
     private String name;
 
     @NotNull
     @Column
     private Long age;
 
-    @Where
-    @JoinTable(name = "positionJoin", joinMultiLanguageTable = true, target = Position.class, type = JoinType.LEFT, on = {@JoinOn(joinField = Position.FIELD_POSITION_ID), @JoinOn(joinField = BaseDTO.FIELD_LANG, joinExpression = BaseConstants.PLACEHOLDER_LOCALE)})
-
-    private String positionId;
-
-    private String positionName;
-
-    @Where
-    @Length(max = 50)
     @Column
+    @NotEmpty
+    @Length(max = 1)
     private String sex;
 
+    @Column
+    @Where
+    @MultiLanguageField
+    @Length(max = 255)
+    private String description;
+
+    @JoinTable(name = "positionJoin", joinMultiLanguageTable = true, target = Position.class, type = JoinType.LEFT, on = {@JoinOn(joinField = Position.FIELD_POSITION_ID), @JoinOn(joinField = BaseDTO.FIELD_LANG, joinExpression = BaseConstants.PLACEHOLDER_LOCALE)})
+    @Column
+    private String positionId;
+
+    @Transient
+    @JoinColumn(joinName = "positionJoin", field = Position.FIELD_NAME)
+    private String positionName;
+
+    @Column
     private Date birth;
 
     public Long getId() {
@@ -93,20 +107,20 @@ public class GridDemo extends BaseDTO {
         this.age = age;
     }
 
-    public Date getBirth() {
-        return birth;
-    }
-
-    public void setBirth(Date birth) {
-        this.birth = birth;
-    }
-
     public String getSex() {
         return sex;
     }
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPositionId() {
@@ -123,5 +137,13 @@ public class GridDemo extends BaseDTO {
 
     public void setPositionName(String positionName) {
         this.positionName = positionName;
+    }
+
+    public Date getBirth() {
+        return birth;
+    }
+
+    public void setBirth(Date birth) {
+        this.birth = birth;
     }
 }

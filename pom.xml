@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>hbi</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>demo</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <parent>
@@ -14,29 +14,37 @@
         <version>4.0-SNAPSHOT</version>
     </parent>
 
+    <name>hap-template</name>
+    <url>http://maven.apache.org</url>
+
+
+    <repositories>
+        <repository>
+            <id>RDC</id>
+            <name>RDC Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/rdc</url>
+        </repository>
+        <repository>
+            <id>RDC snapshot</id>
+            <name>RDC snapshot Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/rdcsnapshot</url>
+        </repository>
+        <repository>
+            <id>RDC thirdparty</id>
+            <name>RDC thirdparty Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/thirdparty</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <!-- hap全模块依赖 -->
         <dependency>
             <groupId>com.hand</groupId>
             <artifactId>hap</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>hap-demo</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/java/</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.groovy</include>
-                    <include>**/*.xml</include>
-                    <include>**/*.vm</include>
-                    <include>**/*.xlsx</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
     </build>
+
 </project>

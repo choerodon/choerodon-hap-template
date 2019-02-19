@@ -161,8 +161,16 @@ fabric.properties
 node_modules/
 target/
 
-src/main/resources/lib/dist/
+## 删除前端编译产生的文件
+**/lib/dist/
+**/lib/assets/
 src/main/resources/WEB-INF/view/index.html
 src/main/resources/WEB-INF/view/withoutsider.html
 
 package-lock.json
+
+## 去掉日志目录
+hap.log.path_IS_UNDEFINED/
+
+src/mian/resoucres/E
+将删除 src/test/

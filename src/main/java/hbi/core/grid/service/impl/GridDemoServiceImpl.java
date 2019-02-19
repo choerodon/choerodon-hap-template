@@ -1,23 +1,16 @@
 package hbi.core.grid.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.StringUtil;
-import com.hand.hap.core.IRequest;
 import com.hand.hap.dataset.annotation.Dataset;
 import com.hand.hap.dataset.exception.DatasetException;
 import com.hand.hap.dataset.service.IDatasetService;
+import hbi.core.grid.service.IGridDemoService;
 import com.hand.hap.mybatis.common.Criteria;
 import com.hand.hap.system.service.impl.BaseServiceImpl;
 import hbi.core.grid.dto.GridDemo;
-import hbi.core.grid.mapper.GridDemoMapper;
-import hbi.core.grid.service.IGridDemoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,52 +21,37 @@ import static com.hand.hap.system.dto.DTOStatus.*;
 @Dataset("gridDemo")
 public class GridDemoServiceImpl extends BaseServiceImpl<GridDemo> implements IGridDemoService, IDatasetService<GridDemo> {
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private GridDemoMapper gridDemoMapper;
-
-
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS)
-    public List<GridDemo> selectUsers(IRequest request, GridDemo gridDemo, int pageNum, int pageSize) {
-        if (gridDemo != null && StringUtil.isNotEmpty(gridDemo.getName())) {
-            gridDemo.setName(gridDemo.getName().toLowerCase());
-        }
-        PageHelper.startPage(pageNum, pageSize);
-        return gridDemoMapper.select(gridDemo);
-    }
-
-    @Override
-    public List<?> queries(Map<String, Object> map, int page, int pageSize, String sortname, boolean isDesc) {
-
+    public List<?> queries(Map<String, Object> body, int page, int pageSize, String sortname, boolean isDesc) {
         try {
-            GridDemo gridDemo = objectMapper.readValue(objectMapper.writeValueAsString(map), GridDemo.class);
+            GridDemo gridDemo = new GridDemo();
+            BeanUtils.populate(gridDemo, body);
+            gridDemo.setSortname(sortname);
+            gridDemo.setSortorder(isDesc ? "desc" : "asc");
             Criteria criteria = new Criteria(gridDemo);
-            return super.selectOptions(null,gridDemo,criteria ,page, pageSize);
-        } catch (IOException e) {
+            return super.selectOptions(null, gridDemo, criteria, page, pageSize);
+        } catch (Exception e) {
             throw new DatasetException("dataset.error", e);
         }
-
     }
 
-
     @Override
-    public List<GridDemo> mutations(List<GridDemo> submitItems) {
-        for (GridDemo item : submitItems) {
-            switch (item.get__status()) {
+    public List<GridDemo> mutations(List<GridDemo> list) {
+        for (GridDemo demo : list) {
+            switch (demo.get__status()) {
                 case ADD:
-                    this.insertSelective(null, item);
+                    super.insertSelective(null, demo);
                     break;
                 case DELETE:
-                    this.deleteByPrimaryKey(item);
+                    super.deleteByPrimaryKey(demo);
                     break;
                 case UPDATE:
-                    this.updateByPrimaryKeySelective(null, item);
+                    super.updateByPrimaryKey(null, demo);
+                    break;
+                default:
                     break;
             }
         }
-        return submitItems;
+        return list;
     }
 }
