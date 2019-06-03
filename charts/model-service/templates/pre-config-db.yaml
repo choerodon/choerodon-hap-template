@@ -1,25 +1,44 @@
+{{- if .Values.preJob.preInitDB.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-init-config
+  name: {{ .Release.Name }}-init-db
   labels:
 {{ include "service.labels.standard" . | indent 4 }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-weight": "1"
 spec:
   backoffLimit: 1
-  activeDeadlineSeconds: 3600
+  activeDeadlineSeconds: {{ .Values.preJob.timeout | default 300 }}
   template:
     metadata:
-      name: {{ .Release.Name }}-init-demo
+      name: {{ .Release.Name }}-init-db
     spec:
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - cp -rf /var/choerodon/* /tools
+        image: {{ .Values.preJob.image }}
+        imagePullPolicy: IfNotPresent
+        name: tools
+        volumeMounts:
+        - mountPath: /tools
+          name: tools-jar
       containers:
-      - name: {{ .Release.Name }}-init-demo
+      - name: {{ .Release.Name }}-init-db
         image: "{{ .Values.image.repository }}:{{ .Chart.Version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
         - /bin/sh
         - -c
-        - 'java -Xms256M -Xmx512M -Dhap.liquibase=/com/hand/hap/demo/core/demo/liquibase.groovy -Dspring.datasource.url=jdbc:mysql://{{ .Values.env.open.MYSQL_HOST }}:{{ .Values.env.open.MYSQL_PORT }}/{{ .Values.env.open.MYSQL_DB }}  -Dspring.datasource.username={{ .Values.env.open.MYSQL_USER }} -Dspring.datasource.password={{ .Values.env.open.MYSQL_PASS }} -jar hap-demo.jar'
+        - 'java -Dspring.datasource.url="{{ .Values.preJob.preInitDB.datasource.url }}" -Dspring.datasource.username={{ .Values.preJob.preInitDB.datasource.username }} -Dspring.datasource.password={{ .Values.preJob.preInitDB.datasource.password }} -Ddata.init=true -Ddata.update.exclusion={{ .Values.preJob.preInitDB.datasource.exclusion }} -Ddata.jar=/{{ .Chart.Name }}.jar -jar /var/choerodon/choerodon-tool-liquibase.jar;'
+        volumeMounts:
+        - mountPath: /var/choerodon
+          name: tools-jar
+      volumes:
+      - emptyDir: {}
+        name: tools-jar
       restartPolicy: Never
+{{- end }}

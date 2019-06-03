@@ -1,44 +1,34 @@
-image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.6.0
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.8.1
 
 stages:
-- build
-- docker
+  - build
+  - release
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-
 build:
   stage: build
-  image: registry.choerodon.com.cn/choerodon-hap/hap-ci
   script:
-  - mvn package -U
-  - npm install --registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ --sass-binary-site=http://npm.taobao.org/mirrors/node-sass
-  - chmod -R 755 node_modules
-  - npm run build
-  - mvn install
-  - mvn package spring-boot:repackage
-  - mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
-  - cp target/hap-demo.jar /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/hap-demo.jar
-  only:
-  - tags
-  - master
-  - /^release-.*$/
-  - /^hotfix-.*$/
+    - update_pom_version
+    - mvn --batch-mode  verify sonar:sonar  -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=$GROUP_NAME:$PROJECT_NAME -Dsonar.gitlab.query_max_retry=200
+    - mvn package -U
+    - cd hap-demo
+    - npm install --registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ --sass-binary-site=http://npm.taobao.org/mirrors/node-sass
+    - chmod -R 755 node_modules
+    - npm run build
+    - cd ..
+    - mvn install
+    - cd hap-demo
+    - mvn package spring-boot:repackage
+    - mv target/hap-demo.jar ../docker
+    - cd ..
+    - kaniko -c $PWD/docker -f $PWD/docker/Dockerfile -d ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG}
 
 docker:
-  stage: docker
+  stage: release
   script:
-  - cp /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/hap-demo.jar ${1:-"src/main/docker"}/hap-demo.jar
-  - docker build -t ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG} ${1:-"src/main/docker"}
-  - docker push ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG}
-  - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
-  - chart_build
-  only:
-  - tags
-  - master
-  - /^release-.*$/
-  - /^hotfix-.*$/
+    - chart_build
 
 .auto_devops: &auto_devops |
   http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=microservice"`
@@ -49,5 +39,5 @@ docker:
   source .auto_devops.sh
 
 before_script:
-- *auto_devops
+  - *auto_devops
 
