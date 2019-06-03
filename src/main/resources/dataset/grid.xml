@@ -1,8 +1,0 @@
-<datsets>
-    <dataset id="GridDemoXML" table="hap_grid_demo_b">
-        <select statementId="hbi.core.grid.mapper.GridDemoMapper.selectGridXml"/>
-        <update columns="name,age,sex,description,positionId,birth"/>
-        <insert columns="name,age,sex,description,positionId,birth"/>
-        <delete />
-    </dataset>
-</datsets>

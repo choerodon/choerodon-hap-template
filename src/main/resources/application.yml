@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/hap_test?useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/hap_dev?useSSL=false&allowPublicKeyRetrieval=true
     username: hap_dev
     password: hap_dev
 
@@ -28,3 +28,4 @@ logging:
     root: debug
   total:  30GB
   history:  30
+

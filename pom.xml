@@ -1,50 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>hbi</groupId>
-    <artifactId>demo</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>io.choerodon</groupId>
+    <artifactId>hap-demo</artifactId>
+    <version>1.0</version>
 
     <parent>
         <artifactId>hap-parent</artifactId>
-        <groupId>com.hand</groupId>
+        <groupId>io.choerodon</groupId>
         <version>4.0-SNAPSHOT</version>
+        <!--<version>4.0.0-RELEASE</version>-->
     </parent>
 
-    <name>hap-template</name>
+    <name>hap-demo</name>
     <url>http://maven.apache.org</url>
-
 
     <repositories>
         <repository>
-            <id>RDC</id>
-            <name>RDC Repository</name>
-            <url>http://nexus.saas.hand-china.com/content/repositories/rdc</url>
+            <id>choerodon-release-repository</id>
+            <url>https://nexus.choerodon.com.cn/repository/choerodon-release</url>
         </repository>
         <repository>
-            <id>RDC snapshot</id>
-            <name>RDC snapshot Repository</name>
-            <url>http://nexus.saas.hand-china.com/content/repositories/rdcsnapshot</url>
-        </repository>
-        <repository>
-            <id>RDC thirdparty</id>
-            <name>RDC thirdparty Repository</name>
-            <url>http://nexus.saas.hand-china.com/content/repositories/thirdparty</url>
+            <id>choerodon-snapshot-repository</id>
+            <url>https://nexus.choerodon.com.cn/repository/choerodon-snapshot</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>choerodon-release-repository</id>
+            <name>Choerodon Release Repository</name>
+            <url>https://nexus.choerodon.com.cn/repository/choerodon-release</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <!-- hap全模块依赖 -->
         <dependency>
-            <groupId>com.hand</groupId>
+            <groupId>io.choerodon</groupId>
             <artifactId>hap</artifactId>
         </dependency>
     </dependencies>
     <build>
         <finalName>hap-demo</finalName>
+        <plugins>
+            <plugin>
+                <groupId>io.choerodon</groupId>
+                <artifactId>choerodon-maven-plugin</artifactId>
+                <version>0.11.0.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>copy</goal>
+                            <goal>extract</goal>
+                            <goal>permission</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serviceBuild>true</serviceBuild>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

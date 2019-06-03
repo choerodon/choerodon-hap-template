@@ -1,19 +1,29 @@
 {
-  "name": "hbi-template",
+  "name": "hap-demo",
   "version": "1.0.0",
   "description": "",
   "main": "./react/RouteIndex.js",
+  "dependencies": {
+    "@choerodon/boot": "0.17.x",
+    "@choerodon/pro-master": "0.1.x"
+  },
   "scripts": {
-    "start": "choerodon-hap-front-boot start --config ./react/config.js -m",
-    "build": "choerodon-hap-front-boot build --config ./react/config.js -m"
+    "start": "choerodon-front-boot start --config ./react/config.js",
+    "build": "choerodon-front-boot build --config ./react/config.js",
+    "lint-staged": "lint-staged",
+    "lint-staged:es": "eslint"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "choerodon-hap-front-boot": "latest",
-    "choerodon-hap-ui": "latest",
-    "react-loadable": "^5.5.0",
-    "uuid": "^3.0.0"
+  "lint-staged": {
+    "react/**/*.{js,jsx}": [
+      "npm run lint-staged:es"
+    ],
+    "react/**/*.scss": "stylelint --syntax scss"
   },
-  "peerDependencies": {}
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }
