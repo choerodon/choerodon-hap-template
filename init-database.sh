@@ -15,5 +15,5 @@ java -Dspring.datasource.url="jdbc:mysql://localhost/hap_dev?useUnicode=true&cha
  -Dspring.datasource.password=hap_dev \
  -Ddata.mode=all \
  -Ddata.drop=false -Ddata.init=true \
- -Ddata.jar=target/hap-demo.jar \
+ -Ddata.jar=target/{{service.code}}.jar \
  -jar ${TOOL_JAR_PATH}

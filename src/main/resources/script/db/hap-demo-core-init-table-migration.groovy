@@ -1,6 +1,6 @@
 package script.db
 
-databaseChangeLog(logicalFilePath: "hap-demo-core-init-table-migration.groovy") {
+databaseChangeLog(logicalFilePath: "{{service.code}}-core-init-table-migration.groovy") {
 
     changeSet(author: "qiang.zeng", id: "2018-11-02-hap_grid_demo") {
         if (helper.dbType().isSupportSequence()) {
