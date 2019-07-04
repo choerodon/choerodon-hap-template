@@ -3,15 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.choerodon</groupId>
-    <artifactId>{{service.code}}</artifactId>
-    <version>1.0</version>
-
     <parent>
         <artifactId>hap-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>4.0.0-RELEASE</version>
+        <version>4.0.3-RELEASE</version>
     </parent>
+
+    <artifactId>{{service.code}}</artifactId>
+    <version>1.0</version>
 
     <name>{{service.code}}</name>
     <url>http://maven.apache.org</url>
@@ -47,7 +46,7 @@
             <plugin>
                 <groupId>io.choerodon</groupId>
                 <artifactId>choerodon-maven-plugin</artifactId>
-                <version>0.11.0.RELEASE</version>
+                <version>0.11.1.RELEASE</version>
                 <executions>
                     <execution>
                         <goals>

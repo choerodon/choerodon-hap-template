@@ -5,7 +5,8 @@
   "main": "./react/RouteIndex.js",
   "dependencies": {
     "@choerodon/boot": "0.17.x",
-    "@choerodon/pro-master": "0.1.x"
+    "@choerodon/pro-master": "0.1.x",
+    "choerodon-ui": "0.6.x"
   },
   "scripts": {
     "start": "choerodon-front-boot start --config ./react/config.js",
