@@ -1,47 +1,61 @@
+# Default values for project.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# pod运行数量
 replicaCount: 1
 
 image:
+  # 镜像库地址
   repository: registry.cn-hangzhou.aliyuncs.com/{{group.name}}/{{service.code}}
+  # 镜像拉取策略
   pullPolicy: IfNotPresent
 
 preJob:
+  # job超时时间
   timeout: 300
+  # job镜像库地址
   image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.5
   preInitDB:
+    # 是否初始化数据库
     enabled: true
     datasource:
+      # 数据库连接地址
       url: jdbc:mysql://localhost:3306/hap_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      # 数据库用户名
       username: hap_dev
+      # 数据库密码
       password: hap_dev
-
-service:
-  enable: false
-  type: ClusterIP
-  port: 8080
-  name: {{service.code}}
-
-ingress:
-  enable: false
-  host: choerodon.com.cn
-
-metrics:
-  path: /actuator/prometheus
-  group: spring-boot
 
 env:
   open:
+    # 数据库连接地址
     SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/hap_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    # 数据库用户名
     SPRING_DATASOURCE_USERNAME: hap_dev
+    # 数据库密码
     SPRING_DATASOURCE_PASSWORD: hap_dev
+    # redis主机地址
     SPRING_REDIS_HOST: localhost
-    REDIS_DB: 6379
+    # redis端口
+    SPRING_REDIS_PORT: 6379
+    # redis db
     SPRING_REDIS_DATABASE: 10
 
+metrics:
+  # 收集应用的指标数据路径
+  path: /actuator/prometheus
+  # 性能指标应用分组
+  group: spring-boot
+
 logs:
+  # 日志收集格式
   parser: spring-boot
 
 resources:
+  # k8s中容器能使用资源的资源最大值
   limits:
     memory: 2Gi
+  # k8s中容器使用的最小资源需求
   requests:
     memory: 1Gi
